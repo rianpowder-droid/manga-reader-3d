@@ -6,64 +6,75 @@
 <title>3D Manga Reader - Chainsaw Man</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
-h1{margin-bottom:10px;color:#ff4757}
-.book-container{perspective:1500px;width:400px;height:560px;position:relative}
-.book{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1s}
-.page{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.page img{width:100%;height:100%;object-fit:cover}
-.page-front{background:#1a1a2e;transform:rotateY(0deg)}
-.page-back{background:#1a1a2e;transform:rotateY(180deg)}
-.controls{margin-top:20px;display:flex;gap:10px}
-.controls button{background:#ff4757;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:16px}
-.controls button:hover{background:#ff6b81}
-.chapter-info{margin-top:10px;color:#888}
-.page-num{color:#ff4757;font-weight:bold}
+body{background:#1a1a2e;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+h1{margin-bottom:15px;color:#ff4757;font-size:24px}
+.book-container{perspective:2000px;width:500px;height:700px;position:relative}
+.spine{position:absolute;left:50%;top:0;width:4px;height:100%;background:linear-gradient(to right,#333,#555,#333);transform:translateX(-50%);z-index:3;box-shadow:0 0 10px rgba(0,0,0,.5)}
+.book{width:100%;height:100%;position:relative;transform-style:preserve-3d}
+.page{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:4px;overflow:hidden;box-shadow:5px 5px 20px rgba(0,0,0,.6);background:#fff}
+.page img{width:100%;height:100%;object-fit:cover;display:block}
+.page-left{transform:rotateY(0deg);transform-origin:left center;transition:transform 1.2s cubic-bezier(0.645,0.045,0.355,1);z-index:2}
+.page-right{transform:rotateY(0deg);transform-origin:right center;transition:transform 1.2s cubic-bezier(0.645,0.045,0.355,1);z-index:1}
+.page.flipped-left{transform:rotateY(-180deg)}
+.page.flipped-right{transform:rotateY(180deg)}
+.controls{margin-top:25px;display:flex;gap:15px;align-items:center}
+.controls button{background:#ff4757;color:#fff;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-size:16px;font-weight:bold;transition:all .3s}
+.controls button:hover{background:#ff6b81;transform:scale(1.05)}
+.controls button:disabled{background:#333;cursor:not-allowed;transform:none}
+.chapter-info{margin-top:12px;color:#888;font-size:14px}
+.page-num{color:#ff4757;font-weight:bold;font-size:18px}
+.manga-title{color:#ff4757;font-weight:bold}
 </style>
 </head>
 <body>
 <h1>📖 Chainsaw Man - 3D Manga Reader</h1>
 <div class="book-container">
+<div class="spine"></div>
 <div class="book" id="book">
-<div class="page page-front" id="front">
-<img src="https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Chapter+1+Page+1" alt="Page 1">
+<div class="page page-left" id="leftPage">
+<img id="leftImg" src="https://via.placeholder.com/500x700/1a1a2e/ff4757?text=Ch.1+Page+1" alt="Left Page">
 </div>
-<div class="page page-back" id="back">
-<img src="https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Chapter+1+Page+2" alt="Page 2">
+<div class="page page-right" id="rightPage">
+<img id="rightImg" src="https://via.placeholder.com/500x700/1a1a2e/ff4757?text=Ch.1+Page+2" alt="Right Page">
 </div>
 </div>
 </div>
-<div class="chapter-info">Chapter: <span id="chapter">1</span> | Page: <span class="page-num" id="pageNum">1</span></div>
+<div class="chapter-info"><span class="manga-title">Chainsaw Man</span> | Chapter: <span id="chapter">1</span> | Page: <span class="page-num" id="pageNum">1-2</span></div>
 <div class="controls">
-<button onclick="prevPage()">◀ Prev</button>
-<button onclick="nextPage()">Next ▶</button>
+<button id="prevBtn" onclick="prevPage()">◀ Prev</button>
+<button id="nextBtn" onclick="nextPage()">Next ▶</button>
 </div>
-<div class="info" style="margin-top:15px;color:#666;font-size:12px">Note: Placeholder images. Replace with actual manga pages.</div>
+<div style="margin-top:15px;color:#555;font-size:11px">Placeholder images - ganti dengan gambar manga asli</div>
 <script>
-let currentChapter=1,totalChapters=100,currentPage=1,totalPages=20,flipped=false;
-const book=document.getElementById('book');
+let ch=1,totalCh=100,pg=1,totalPg=20,animating=false;
 function nextPage(){
-if(currentPage<totalPages){currentPage++;flipPage();}
-else if(currentChapter<totalChapters){currentChapter++;currentPage=1;updatePage();}
+if(animating)return;
+if(pg+2<=totalPg){pg+=2;animateFlip('next');}
+else if(ch<totalCh){ch++;pg=1;updatePages();}
 }
 function prevPage(){
-if(currentPage>1){currentPage--;flipPage();}
-else if(currentChapter>1){currentChapter--;currentPage=totalPages;updatePage();}
+if(animating)return;
+if(pg-2>=1){pg-=2;animateFlip('prev');}
+else if(ch>1){ch--;pg=totalPg-1;if(pg<1)pg=1;updatePages();}
 }
-function flipPage(){
-flipped=!flipped;
-book.style.transform=flipped?'rotateY(180deg)':'rotateY(0deg)';
-updatePage();
+function animateFlip(dir){
+animating=true;
+const left=document.getElementById('leftPage');
+const right=document.getElementById('rightPage');
+if(dir==='next'){
+right.classList.add('flipped-right');
+setTimeout(()=>{right.classList.remove('flipped-right');updatePages();animating=false;},600);
+}else{
+left.classList.add('flipped-left');
+setTimeout(()=>{left.classList.remove('flipped-left');updatePages();animating=false;},600);
 }
-function updatePage(){
-document.getElementById('chapter').textContent=currentChapter;
-document.getElementById('pageNum').textContent=currentPage;
-const front=document.getElementById('front');
-const back=document.getElementById('back');
-front.querySelector('img').src=`https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Ch.${currentChapter}+Page+${currentPage}`;
-back.querySelector('img').src=`https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Ch.${currentChapter}+Page+${currentPage+1}`;
+}
+function updatePages(){
+document.getElementById('chapter').textContent=ch;
+document.getElementById('pageNum').textContent=pg+'-'+(pg+1);
+document.getElementById('leftImg').src='https://via.placeholder.com/500x700/1a1a2e/ff4757?text=Ch.'+ch+'+P.'+pg;
+document.getElementById('rightImg').src='https://via.placeholder.com/500x700/1a1a2e/ff4757?text=Ch.'+ch+'+P.'+(pg+1);
 }
 </script>
 </body>
-</html>EOF
-echo "done"
+</html>
