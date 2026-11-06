@@ -3,52 +3,61 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>3D Manga Reader - Chainsaw Man</title>
+<title>Chainsaw Man - 3D Manga Reader</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a14;color:#fff;font-family:'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
-h1{margin-bottom:15px;color:#ff4757;font-size:24px;text-shadow:0 0 10px rgba(255,71,87,.5)}
-.book-container{perspective:2500px;width:520px;height:720px;position:relative}
-.spine{position:absolute;left:50%;top:0;width:6px;height:100%;background:linear-gradient(to right,#222,#444,#222);transform:translateX(-50%);z-index:5;box-shadow:0 0 15px rgba(0,0,0,.8);border-radius:2px}
+body{background:#0a0a0f;color:#e0e0e0;font-family:'Inter',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+header{margin-bottom:20px;text-align:center}
+h1{color:#ff4757;font-size:22px;font-weight:600;letter-spacing:1px}
+.subtitle{color:#666;font-size:12px;margin-top:4px}
+.book-container{perspective:2500px;width:500px;height:700px;position:relative}
+.spine{position:absolute;left:50%;top:0;width:4px;height:100%;background:linear-gradient(to right,#1a1a1a,#333,#1a1a1a);transform:translateX(-50%);z-index:5;box-shadow:0 0 20px rgba(0,0,0,.9)}
 .book{width:100%;height:100%;position:relative;transform-style:preserve-3d}
-.page{position:absolute;width:50%;height:100%;backface-visibility:hidden;overflow:hidden;box-shadow:0 5px 30px rgba(0,0,0,.7);background:#111}
-.page-left{left:0;border-radius:4px 0 0 4px;transform-origin:right center;transition:transform .8s cubic-bezier(0.25,0.46,0.45,0.94);z-index:2}
-.page-right{right:0;border-radius:0 4px 4px 0;transform-origin:left center;transition:transform .8s cubic-bezier(0.25,0.46,0.45,0.94);z-index:1}
-.page img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s}
+.page{position:absolute;width:50%;height:100%;backface-visibility:hidden;overflow:hidden;background:#111;transition:transform .6s cubic-bezier(0.4,0,0.2,1)}
+.page-left{left:0;border-radius:6px 0 0 6px;transform-origin:right center;z-index:2}
+.page-right{right:0;border-radius:0 6px 6px 0;transform-origin:left center;z-index:1}
+.page img{width:100%;height:100%;object-fit:cover;display:block}
 .page.flipped-left{transform:rotateY(-180deg)}
 .page.flipped-right{transform:rotateY(180deg)}
-.page-shadow{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.3),transparent);pointer-events:none;z-index:4}
-.controls{margin-top:25px;display:flex;gap:15px;align-items:center}
-.controls button{background:linear-gradient(135deg,#ff4757,#ff6b81);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold;transition:all .3s;box-shadow:0 4px 15px rgba(255,71,87,.3)}
-.controls button:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(255,71,87,.5)}
-.controls button:disabled{background:#333;cursor:not-allowed;transform:none;box-shadow:none}
-.chapter-info{margin-top:12px;color:#888;font-size:14px;text-align:center}
-.page-num{color:#ff4757;font-weight:bold;font-size:18px}
-.manga-title{color:#ff4757;font-weight:bold;font-size:16px}
-.loading{position:fixed;inset:0;background:#0a0a14;display:flex;align-items:center;justify-content:center;font-size:24px;color:#ff4757;z-index:100}
+.page-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.4),transparent);pointer-events:none;z-index:3}
+.controls{margin-top:24px;display:flex;gap:12px;align-items:center}
+.controls button{background:#ff4757;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s;letter-spacing:.5px}
+.controls button:hover{background:#ff6b81;transform:translateY(-1px)}
+.controls button:disabled{background:#2a2a2a;cursor:not-allowed;transform:none;opacity:.5}
+.chapter-info{margin-top:12px;color:#555;font-size:13px;text-align:center}
+.page-num{color:#ff4757;font-weight:600}
+.manga-title{color:#ff4757;font-weight:600}
+.loading{position:fixed;inset:0;background:#0a0a0f;display:flex;align-items:center;justify-content:center;font-size:18px;color:#ff4757;z-index:100;transition:opacity .5s}
+.loading.hidden{opacity:0;pointer-events:none}
+.kbd-hint{margin-top:8px;color:#444;font-size:11px}
 </style>
 </head>
 <body>
-<div class="loading" id="loading">Loading Chainsaw Man...</div>
-<h1>📖 Chainsaw Man - 3D Manga Reader</h1>
+<div class="loading" id="loading">Loading...</div>
+<header>
+<h1>Chainsaw Man</h1>
+<p class="subtitle">3D Manga Reader</p>
+</header>
 <div class="book-container">
 <div class="spine"></div>
 <div class="book" id="book">
 <div class="page page-left" id="leftPage">
 <img id="leftImg" src="" alt="Left Page">
+<div class="page-overlay"></div>
 </div>
 <div class="page page-right" id="rightPage">
 <img id="rightImg" src="" alt="Right Page">
+<div class="page-overlay"></div>
 </div>
-<div class="page-shadow"></div>
 </div>
 </div>
-<div class="chapter-info"><span class="manga-title">Chainsaw Man</span> | Chapter: <span id="chapter">1</span> | Page: <span class="page-num" id="pageNum">1-2</span></div>
+<div class="chapter-info"><span class="manga-title">Chainsaw Man</span> | Ch. <span id="chapter">1</span> | Pg. <span class="page-num" id="pageNum">1-2</span></div>
 <div class="controls">
 <button id="prevBtn" onclick="prevPage()">◀ Prev</button>
 <button id="nextBtn" onclick="nextPage()">Next ▶</button>
 </div>
-<div style="margin-top:15px;color:#555;font-size:11px">Smooth 3D page flip animation</div>
+<div class="kbd-hint">← → arrow keys | Space: next | R: restart</div>
 <script>
 let ch=1,totalCh=100,pg=1,totalPg=20,animating=false;
 const leftImg=document.getElementById('leftImg');
@@ -58,12 +67,14 @@ const rightPage=document.getElementById('rightPage');
 
 function getPageUrl(ch,pg){
 if(ch===1&&pg===1)return 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0a/Chainsawman.jpg/252px-Chainsawman.jpg';
-return 'https://via.placeholder.com/500x700/1a1a2e/ff4757?text=Ch.'+ch+'+P.'+pg;
+return 'images/ch'+ch+'/p'+pg+'.jpg';
 }
 
-function preloadImages(){
-const imgs=[getPageUrl(ch,pg),getPageUrl(ch,pg+1)];
-imgs.forEach(src=>{const i=new Image();i.src=src;});
+function updatePages(){
+document.getElementById('chapter').textContent=ch;
+document.getElementById('pageNum').textContent=pg+'-'+(pg+1);
+leftImg.src=getPageUrl(ch,pg);
+rightImg.src=getPageUrl(ch,pg+1);
 }
 
 function nextPage(){
@@ -80,21 +91,19 @@ function animateFlip(dir){
 animating=true;
 if(dir==='next'){
 rightPage.classList.add('flipped-right');
-setTimeout(()=>{rightPage.classList.remove('flipped-right');updatePages();animating=false;},400);
+setTimeout(()=>{rightPage.classList.remove('flipped-right');updatePages();animating=false;},300);
 }else{
 leftPage.classList.add('flipped-left');
-setTimeout(()=>{leftPage.classList.remove('flipped-left');updatePages();animating=false;},400);
+setTimeout(()=>{leftPage.classList.remove('flipped-left');updatePages();animating=false;},300);
 }
 }
-function updatePages(){
-document.getElementById('chapter').textContent=ch;
-document.getElementById('pageNum').textContent=pg+'-'+(pg+1);
-leftImg.src=getPageUrl(ch,pg);
-rightImg.src=getPageUrl(ch,pg+1);
-preloadImages();
-}
+document.addEventListener('keydown',e=>{
+if(e.key==='ArrowRight'||e.key===' ')nextPage();
+if(e.key==='ArrowLeft')prevPage();
+if(e.key==='r'||e.key==='R'){ch=1;pg=1;updatePages();}
+});
 updatePages();
-setTimeout(()=>{document.getElementById('loading').style.display='none';},500);
+setTimeout(()=>{document.getElementById('loading').classList.add('hidden');},300);
 </script>
 </body>
 </html>EOF
