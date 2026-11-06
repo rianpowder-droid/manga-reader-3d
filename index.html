@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3D Manga Reader - Chainsaw Man</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+h1{margin-bottom:10px;color:#ff4757}
+.book-container{perspective:1500px;width:400px;height:560px;position:relative}
+.book{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1s}
+.page{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.page img{width:100%;height:100%;object-fit:cover}
+.page-front{background:#1a1a2e;transform:rotateY(0deg)}
+.page-back{background:#1a1a2e;transform:rotateY(180deg)}
+.controls{margin-top:20px;display:flex;gap:10px}
+.controls button{background:#ff4757;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:16px}
+.controls button:hover{background:#ff6b81}
+.chapter-info{margin-top:10px;color:#888}
+.page-num{color:#ff4757;font-weight:bold}
+</style>
+</head>
+<body>
+<h1>📖 Chainsaw Man - 3D Manga Reader</h1>
+<div class="book-container">
+<div class="book" id="book">
+<div class="page page-front" id="front">
+<img src="https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Chapter+1+Page+1" alt="Page 1">
+</div>
+<div class="page page-back" id="back">
+<img src="https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Chapter+1+Page+2" alt="Page 2">
+</div>
+</div>
+</div>
+<div class="chapter-info">Chapter: <span id="chapter">1</span> | Page: <span class="page-num" id="pageNum">1</span></div>
+<div class="controls">
+<button onclick="prevPage()">◀ Prev</button>
+<button onclick="nextPage()">Next ▶</button>
+</div>
+<div class="info" style="margin-top:15px;color:#666;font-size:12px">Note: Placeholder images. Replace with actual manga pages.</div>
+<script>
+let currentChapter=1,totalChapters=100,currentPage=1,totalPages=20,flipped=false;
+const book=document.getElementById('book');
+function nextPage(){
+if(currentPage<totalPages){currentPage++;flipPage();}
+else if(currentChapter<totalChapters){currentChapter++;currentPage=1;updatePage();}
+}
+function prevPage(){
+if(currentPage>1){currentPage--;flipPage();}
+else if(currentChapter>1){currentChapter--;currentPage=totalPages;updatePage();}
+}
+function flipPage(){
+flipped=!flipped;
+book.style.transform=flipped?'rotateY(180deg)':'rotateY(0deg)';
+updatePage();
+}
+function updatePage(){
+document.getElementById('chapter').textContent=currentChapter;
+document.getElementById('pageNum').textContent=currentPage;
+const front=document.getElementById('front');
+const back=document.getElementById('back');
+front.querySelector('img').src=`https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Ch.${currentChapter}+Page+${currentPage}`;
+back.querySelector('img').src=`https://via.placeholder.com/400x560/1a1a2e/ff4757?text=Ch.${currentChapter}+Page+${currentPage+1}`;
+}
+</script>
+</body>
+</html>EOF
+echo "done"
